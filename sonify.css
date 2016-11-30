@@ -1,0 +1,347 @@
+/*######################## */
+/*######################## */
+/*      ID link to #       */
+/*      id=""              */
+/*######################## */
+/*######################## */
+#nav1 {
+	margin: 10px 0px 0px 0px; /*T R B L*/
+	padding: 0px 0px 18px 0px;
+	border-bottom:2px solid #5588AA;
+	width: 1050px ;
+	margin-left: auto ;
+	margin-right: auto ;
+}
+
+#content {
+	width: 1050px ;
+	margin-left: auto ;
+	margin-right: auto ;
+}
+
+
+/*######################## */
+/*######################## */
+/*   Standard selectors    */
+/*######################## */
+/*######################## */
+
+body {
+	 margin: 0;
+	 font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: .75em;
+	 padding: 0;
+	 background: #e8edff;
+}
+
+h1 { 
+	color:#990000; 
+	text-align:left;
+	font-size:1.3em;
+	padding-top:1px;
+	margin: 10px 0px 0px 0px; /*T R B L*/
+	padding: 0px 0px 6px 0px;
+}
+
+h2 { 
+	color:#212121; 
+	text-align: left;
+	font-size:1.5em;
+	margin: 10px 0px 10px 0px; /*T R B L*/
+	padding: 6px 0px 6px 0px;
+}
+
+h3 { 
+	color:#990000; 
+	text-align: left;
+	font-size:1em;
+	margin: 0px 0px 0px 0px; /*T R B L*/
+	padding: 6px 0px 6px 0px;
+}
+
+br{
+	clear: left;
+}
+
+b{ 
+	color:#990000;
+}
+
+b.big{ 
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:1.1em;
+}
+
+p{ 
+}
+
+fieldset{
+	border:2px solid #5588AA;
+	clear: left;
+	margin: 5px 0px 5px 0px; /*T R B L*/
+	padding: 5px 10px 10px 10px;
+	background: white;
+}
+
+fieldset.fset2{
+	border:2px solid #990000;
+	clear: left;
+	margin: 5px 0px 5px 0px; /*T R B L*/
+	padding: 5px 10px 10px 10px;
+	background: #EFF5F6;
+}
+
+hr {
+	border:1px solid #5588AA;
+
+}
+
+label{ /* eg text to left of dropdown box*/
+	float: left;
+	width: 50px;
+	font-weight: bold;
+    line-height: 2;	
+}
+
+input, textarea{ /*position of radio box*/
+	font-size:0.9em;
+	margin-bottom: 5px;
+	margin-left: 10px;
+}
+
+textarea{
+	font-family:"Courier New", Courier, monospace;
+	font-size:0.9em;
+	width: 700px;
+	height: 80px;
+}
+
+p.DNA_seq{
+	font-family:"Courier New", Courier, monospace;
+	font-size:1.1em;
+}
+
+
+/*######################## */
+/*######################## */
+/*      CLASS link to .    */
+/*      class=""           */
+/*######################## */
+/*######################## */
+
+.col_one { 
+	margin: 0px 10px 0px 7px; /*T R B L*/
+	padding: 0px 5px 0px 5px;
+	border:0px solid #5588AA;
+	width: 30%; 
+	float: left;
+}
+.col_two { 
+	margin: 0px 0px 0px 11px; /*T R B L*/
+	padding: 0px 0px 0px 0px;
+	width: 65%; 
+	float: left;
+}
+
+.col_one_note_table {
+	margin: 0px 0px 0px 0px; /*T R B L*/
+	padding: 0px 0px 0px 0px;
+	width: 20%;
+	float: left;
+}
+
+.col_two_note_table {
+	margin: 0px 0px 0px 0px; /*T R B L*/
+	padding: 0px 0px 0px 0px;
+	float: left;
+	font-family:"Courier New", Courier, monospace;
+}
+
+.col_one_dna_name_radiolist {
+	margin: 0px 0px 0px 0px; /*T R B L*/
+	padding: 0px 0px 0px 0px;
+	width: 25%; /* Allows for fluid design. Can be set to pixels */
+	float: left; color:#990000;
+}
+
+/*set up to control drop down boxes and submit buttons*/
+.submitbutton {
+    background: #FFFFFF;
+	font-family: verdana;
+	border: #5588AA 1px solid;
+	color: #333333; 
+	margin: 1px 0px 1px 30px; /*T R B L*/
+	padding: 0px 5px 0px 5px;
+	-webkit-border-radius: 5px;
+    border-radius: 5px; 
+}
+
+.submitbutton:hover {
+    background: #e8edff;
+	font-family: verdana;
+	border: #0033FF 1px solid;
+	color: #990000;
+}
+
+/* this is the sonify button*/
+.submitbutton2 {
+	font-size:1.3em;
+}
+
+.submitbutton2:hover {
+	font-size:1.3em;
+	color: #990000; 
+}
+
+/*Credits: Dynamic Drive CSS Library */
+/*URL: http://www.dynamicdrive.com/style/ */
+.underlinemenu {
+	font-weight: bold;
+	width: 30%;
+	float: left;
+}
+.underlinemenu ul {
+	margin: 0px 0px 0px 0px; /*T R B L*/
+	padding: 1px 0px 7px 20px;/*6px should equal top padding of "ul li a" below, 7px should equal bottom padding + bottom border of "ul li a" below*/
+	text-align: left; /*set value to "left", "center", or "right"*/
+}
+.underlinemenu ul li {
+	display: inline;
+}
+	
+.underlinemenu ul li a {
+	color: #990000;
+	padding-top:1px;
+	padding-right:3px;
+	
+	padding-bottom:4px;
+	border-bottom: 2px solid #5588AA; /* colour same as body to hide bottom border is 3px*/
+
+	padding-left:3px; 
+	margin-right: 20px; /*spacing between each menu link*/
+	text-decoration: none;
+}
+
+.underlinemenu ul li a:hover, .underlinemenu ul li a.selected {
+	border-bottom-color: #990000;
+	color: black;
+}
+
+.box-table-a {
+	text-align: center;
+	margin: auto; /*make table center in firefox*/
+}
+
+.box-table-a th {
+	font-family: Arial, Helvetica, sans-serif;
+	padding: 8px;
+	background: #b9c9fe;
+	color: #000000;
+	border-top: 1px solid #aabcfe;
+	font-weight: normal;
+}
+
+.box-table-a td { 
+	font-family:"Courier New", Courier, monospace;
+	padding: 8px;
+	background: #e8edff; 
+	color: #000000;
+	border-bottom: 1px solid #aabcfe;
+	padding-left:20px;
+}
+
+.box-table-a tr:hover td {
+	background: #d0dafd;
+	color: #339;
+}
+
+td.l {
+	text-align: left; 
+	padding-left:100px; 
+}
+ 
+th.l { 
+	text-align: left;
+	padding-left:100px; 
+}
+/* td or td class="l" */
+
+
+
+/* Author: Craig Erskine Description: Dynamic Menu System - Horizontal/Vertical */ 
+ul#navmenu-h { 
+margin: 0; 
+list-style: none; 
+position: relative; 
+} 
+
+ul#navmenu-h ul { 
+width: 160px; /* Sub Menu Width */ 
+margin: 0; 
+list-style: none; 
+display: none; 
+position: absolute; 
+top: 100%; 
+left: -40px; 
+} 
+
+ul#navmenu-h ul ul, ul#navmenu-h ul ul ul { 
+top: 0; 
+left: 100%; 
+} 
+
+ul#navmenu-h li { 
+	float: left; 
+	display: inline; 
+	position: relative; 
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+
+} 
+
+ul#navmenu-h ul li { 
+	width: 100%; 
+	display: block; 
+}
+
+/* Root Menu */ 
+ul#navmenu-h a { 
+	padding: 10px; 
+	float: left; 
+	display: block; 
+	background: #b9c9fe;
+	text-decoration: none; 
+	height: 1%; 
+	margin: 0px 5px 0px 0px;
+
+} 
+
+/* Root Menu Hover Persistence */ 
+ul#navmenu-h a:hover,ul#navmenu-h li:hover a,ul#navmenu-h li.iehover a { 
+	background: #d0dafd;
+	color: #990000; 
+	border-bottom: 1px solid #aabcfe;
+} 
+
+/* 2nd Menu */ 
+ul#navmenu-h li:hover li a,ul#navmenu-h li.iehover li a { 
+	float: none; 
+	background: #e8edff;
+	border-left: 5px solid #aabcfe;
+} 
+
+/* 2nd Menu Hover Persistence */ 
+ul#navmenu-h li:hover li a:hover,ul#navmenu-h li:hover li:hover a,ul#navmenu-h li.iehover li a:hover,ul#navmenu-h li.iehover li.iehover a { 
+	background: #d0dafd;
+
+} 
+
+/* Hover Function - Do Not Move */ 
+ul#navmenu-h li:hover ul ul,ul#navmenu-h li:hover ul ul ul,ul#navmenu-h li.iehover ul ul,ul#navmenu-h li.iehover ul ul ul { 
+	display: none; 
+} 
+
+ul#navmenu-h li:hover ul,ul#navmenu-h ul li:hover ul,ul#navmenu-h ul ul li:hover ul,ul#navmenu-h li.iehover ul,ul#navmenu-h ul li.iehover ul,ul#navmenu-h ul ul li.iehover ul { 
+	display: block; 
+}
+

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<title>General MIDI Sounds</title>
+<meta name="keywords" content="General MIDI, sound, program" />
+<meta name="description" content="Interactive chart of General MIDI programs" />
+<meta http-equiv="X-UA-Compatible" content="requiresActiveX=true"/>
+<script src="./JZZ-modules-master/javascript/script/JZZ.js"></script>
+<script src="./JZZ-modules-master/javascript/script/JZZ.synth.OSC.js"></script>
+<script src="./JZZ-modules-master/javascript/script/JZZ.input.Kbd.js"></script>
+<link rel="stylesheet" type="text/css" href="./JZZ-modules-master/style.css" />
+
+<script type="text/javascript">
+(function(){
+ if(window.addEventListener) window.addEventListener('load',init,false);
+ else if(window.attachEvent) window.attachEvent('onload',init);
+ var midi_init;
+ var playing;
+ var sound;
+ var out;
+
+ function visit(t){
+  if(t.nodeType!=1) return;
+  if(t.getAttribute('midi')){
+   if(t.addEventListener){
+    t.addEventListener('mousedown',down,false);
+   }
+   else if(t.attachEvent){
+    t.attachEvent('onmousedown',down);
+   }
+  }
+  if(t.getAttribute('prog')){
+   if(t.addEventListener){
+    t.addEventListener('mousedown',prog,false);
+   }
+   else if(t.attachEvent){
+    t.attachEvent('onmousedown',prog);
+   }
+  }
+  for(var i in t.childNodes){
+   visit(t.childNodes[i]);
+  }
+ }
+
+ function init(){
+  if(document.addEventListener){
+   document.addEventListener('mouseup',up,false);
+  }
+  else if(document.attachEvent){
+   document.attachEvent('onmouseup',up);
+  }
+  Jazz = document.getElementById('Jazz1'); if(!Jazz || !Jazz.isJazz) Jazz = document.getElementById('Jazz2');
+  if(Jazz && Jazz.isJazz){
+   Jazz.MidiOut(0x80,0,0);
+   try{
+    out=document.getElementById('midiout');
+    var list=Jazz.MidiOutList();
+    for(var i in list){
+     out[i]=new Option(list[i],list[i],i==0,i==0);
+    }
+    if(out.addEventListener){
+     out.addEventListener('change',changemidi,false);
+    }
+    else if(out.attachEvent){
+     out.attachEvent('onchange',changemidi);
+    }
+    document.getElementById('selectmidiout').className='';
+   }
+   catch(err){}
+  }
+  visit(document.body);
+ }
+
+ function changemidi(){
+  Jazz.MidiOutOpen(out.options[out.selectedIndex].value);
+ }
+
+ function down(e){
+  var e=window.event || e;
+  var t;
+  if (e.target) t = e.target;
+  else if (e.srcElement) t = e.srcElement;
+  up(0);
+  while(!t.getAttribute('midi')) t=t.parentNode;
+  if(Jazz && Jazz.isJazz){
+   Jazz.MidiOut(0x90,t.getAttribute('midi'),100);
+  }
+  t.className='playing';
+  playing=t;
+ }
+
+ function up(e){
+  if(!playing) return;
+  if(Jazz && Jazz.isJazz){
+   Jazz.MidiOut(0x80,playing.getAttribute('midi'),0);
+  }
+  playing.className='';
+  playing=null;
+ }
+
+ function prog(e){
+  var e=window.event || e;
+  var t;
+  if (e.target) t = e.target;
+  else if (e.srcElement) t = e.srcElement;
+  up(0);
+  if(sound){ sound.className='';}
+  while(!t.getAttribute('prog')) t=t.parentNode;
+  if(Jazz && Jazz.isJazz){
+   Jazz.MidiOut(0xC0,t.getAttribute('prog'),0);
+   Jazz.MidiOut(0x90,60,0x7f);
+   window.setTimeout(function(){ Jazz.MidiOut(0x80,60,0);},500);
+  }
+  t.className='on';
+  sound=t;
+ }
+})();
+</script>
+
+
+
+</head>
+
+<body>
+
+
+<object id="Jazz1" classid="CLSID:1ACE1618-1C7D-4561-AEE1-34842AA85E90" class="hidden">
+  <object id="Jazz2" type="audio/x-jazz" class="hidden">
+<p style="visibility:visible;">This page requires <a href=http://jazz-soft.net>Jazz-Plugin</a> ...</p>
+  </object>
+</object>
+
+<div id=selectmidiout class="hidden"><select id=midiout class="hidden"></select></div>
+
+
+
+<div class=tab>
+<span class=col>
+<div class=hdr>Piano</div>
+<div prog=0>&nbsp;&nbsp;0 Acoustic Grand Piano</div>
+<div prog=1>&nbsp;&nbsp;1 Bright Acoustic Piano</div>
+<div prog=2>&nbsp;&nbsp;2 Electric Grand Piano</div>
+<div prog=3>&nbsp;&nbsp;3 Honky-tonk Piano</div>
+<div prog=4>&nbsp;&nbsp;4 Electric Piano 1</div>
+<div prog=5>&nbsp;&nbsp;5 Electric Piano 2</div>
+<div prog=6>&nbsp;&nbsp;6 Harpsichord</div>
+<div prog=7>&nbsp;&nbsp;7 Clavinet</div>
+<div class=odd>
+<div class=hdr>Chromatic Percussion</div>
+<div prog=8>&nbsp;&nbsp;8 Celesta</div>
+<div prog=9>&nbsp;&nbsp;9 Glockenspiel</div>
+<div prog=10>&nbsp;10 Music Box</div>
+<div prog=11>&nbsp;11 Vibraphone</div>
+<div prog=12>&nbsp;12 Marimba</div>
+<div prog=13>&nbsp;13 Xylophone</div>
+<div prog=14>&nbsp;14 Tubular Bells</div>
+<div prog=15>&nbsp;15 Dulcimer</div>
+</div>
+<div class=hdr>Organ</div>
+<div prog=16>&nbsp;16 Drawbar Organ</div>
+<div prog=17>&nbsp;17 Percussive Organ</div>
+<div prog=18>&nbsp;18 Rock Organ</div>
+<div prog=19>&nbsp;19 Church Organ</div>
+<div prog=20>&nbsp;20 Reed Organ</div>
+<div prog=21>&nbsp;21 Accordion</div>
+<div prog=22>&nbsp;22 Harmonica</div>
+<div prog=23>&nbsp;23 Tango Accordion</div>
+<div class=odd>
+<div class=hdr>Guitar</div>
+<div prog=24>&nbsp;24 Acoustic Guitar (nylon)</div>
+<div prog=25>&nbsp;25 Acoustic Guitar (steel)</div>
+<div prog=26>&nbsp;26 Electric Guitar (jazz)</div>
+<div prog=27>&nbsp;27 Electric Guitar (clean)</div>
+<div prog=28>&nbsp;28 Electric Guitar (muted)</div>
+<div prog=29>&nbsp;29 Overdriven Guitar</div>
+<div prog=30>&nbsp;30 Distortion Guitar</div>
+<div prog=31>&nbsp;31 Guitar Harmonics</div>
+</div>
+
+</span><span class=col>
+
+<div class=odd>
+<div class=hdr>Bass</div>
+<div prog=32>&nbsp;32 Acoustic Bass</div>
+<div prog=33>&nbsp;33 Electric Bass (finger)</div>
+<div prog=34>&nbsp;34 Electric Bass (pick)</div>
+<div prog=35>&nbsp;35 Fretless Bass</div>
+<div prog=36>&nbsp;36 Slap Bass 1</div>
+<div prog=37>&nbsp;37 Slap Bass 2</div>
+<div prog=38>&nbsp;38 Synth Bass 1</div>
+<div prog=39>&nbsp;39 Synth Bass 2</div>
+</div>
+<div class=hdr>Strings</div>
+<div prog=40>&nbsp;40 Violin</div>
+<div prog=41>&nbsp;41 Viola</div>
+<div prog=42>&nbsp;42 Cello</div>
+<div prog=43>&nbsp;43 Contrabass</div>
+<div prog=44>&nbsp;44 Tremolo Strings</div>
+<div prog=45>&nbsp;45 Pizzicato Strings</div>
+<div prog=46>&nbsp;46 Orchestral Harp</div>
+<div prog=47>&nbsp;47 Timpani</div>
+<div class=odd>
+<div class=hdr>Ensemble</div>
+<div prog=48>&nbsp;48 String Ensemble 1</div>
+<div prog=49>&nbsp;49 String Ensemble 2</div>
+<div prog=50>&nbsp;50 Synth Strings 1</div>
+<div prog=51>&nbsp;51 Synth Strings 2</div>
+<div prog=52>&nbsp;52 Choir Aahs</div>
+<div prog=53>&nbsp;53 Voice Oohs</div>
+<div prog=54>&nbsp;54 Synth Choir</div>
+<div prog=55>&nbsp;55 Orchestra Hit</div>
+</div>
+<div class=hdr>Brass</div>
+<div prog=56>&nbsp;56 Trumpet</div>
+<div prog=57>&nbsp;57 Trombone</div>
+<div prog=58>&nbsp;58 Tuba</div>
+<div prog=59>&nbsp;59 Muted Trumpet</div>
+<div prog=60>&nbsp;60 French Horn</div>
+<div prog=61>&nbsp;61 Brass Section</div>
+<div prog=62>&nbsp;62 Synth Brass 1</div>
+<div prog=63>&nbsp;63 Synth Brass 2</div>
+
+</span><span class=col>
+
+<div class=hdr>Reed</div>
+<div prog=64>&nbsp;64 Soprano Sax</div>
+<div prog=65>&nbsp;65 Alto Sax</div>
+<div prog=66>&nbsp;66 Tenor Sax</div>
+<div prog=67>&nbsp;67 Baritone Sax</div>
+<div prog=68>&nbsp;68 Oboe</div>
+<div prog=69>&nbsp;69 English Horn</div>
+<div prog=70>&nbsp;70 Bassoon</div>
+<div prog=71>&nbsp;71 Clarinet</div>
+<div class=odd>
+<div class=hdr>Pipe</div>
+<div prog=72>&nbsp;72 Piccolo</div>
+<div prog=73>&nbsp;73 Flute</div>
+<div prog=74>&nbsp;74 Recorder</div>
+<div prog=75>&nbsp;75 Pan Flute</div>
+<div prog=76>&nbsp;76 Blown Bottle</div>
+<div prog=77>&nbsp;77 Shakuhachi</div>
+<div prog=78>&nbsp;78 Whistle</div>
+<div prog=79>&nbsp;79 Ocarina</div>
+</div>
+<div class=hdr>Synth Lead</div>
+<div prog=80>&nbsp;80 Lead 1 (square)</div>
+<div prog=81>&nbsp;81 Lead 2 (sawtooth)</div>
+<div prog=82>&nbsp;82 Lead 3 (calliope)</div>
+<div prog=83>&nbsp;83 Lead 4 (chiff)</div>
+<div prog=84>&nbsp;84 Lead 5 (charang)</div>
+<div prog=85>&nbsp;85 Lead 6 (voice)</div>
+<div prog=86>&nbsp;86 Lead 7 (fifths)</div>
+<div prog=87>&nbsp;87 Lead 8 (bass + lead)</div>
+<div class=odd>
+<div class=hdr>Synth Pad</div>
+<div prog=88>&nbsp;88 Pad 1 (new age)</div>
+<div prog=89>&nbsp;89 Pad 2 (warm)</div>
+<div prog=90>&nbsp;90 Pad 3 (polysynth)</div>
+<div prog=91>&nbsp;91 Pad 4 (choir)</div>
+<div prog=92>&nbsp;92 Pad 5 (bowed)</div>
+<div prog=93>&nbsp;93 Pad 6 (metallic)</div>
+<div prog=94>&nbsp;94 Pad 7 (halo)</div>
+<div prog=95>&nbsp;95 Pad 8 (sweep)</div>
+</div>
+</span><span class=col>
+<div class=odd>
+<div class=hdr>Synth Effects</div>
+<div prog=96>&nbsp;96 FX 1 (rain)</div>
+<div prog=97>&nbsp;97 FX 2 (soundtrack)</div>
+<div prog=98>&nbsp;98 FX 3 (crystal)</div>
+<div prog=99>&nbsp;99 FX 4 (atmosphere)</div>
+<div prog=100>100 FX 5 (brightness)</div>
+<div prog=101>101 FX 6 (goblins)</div>
+<div prog=102>102 FX 7 (echoes)</div>
+<div prog=103>103 FX 8 (sci-fi)</div>
+</div>
+<div class=hdr>Ethnic</div>
+<div prog=104>104 Sitar</div>
+<div prog=105>105 Banjo</div>
+<div prog=106>106 Shamisen</div>
+<div prog=107>107 Koto</div>
+<div prog=108>108 Kalimba</div>
+<div prog=109>109 Bagpipe</div>
+<div prog=110>110 Fiddle</div>
+<div prog=111>111 Shanai</div>
+<div class=odd>
+<div class=hdr>Percussive</div>
+<div prog=112>112 Tinkle Bell</div>
+<div prog=113>113 Agogo</div>
+<div prog=114>114 Steel Drums</div>
+<div prog=115>115 Woodblock</div>
+<div prog=116>116 Taiko Drum</div>
+<div prog=117>117 Melodic Tom</div>
+<div prog=118>118 Synth Drum</div>
+<div prog=119>119 Reverse Cymbal</div>
+</div>
+<div class=hdr>Sound Effects</div>
+<div prog=120>120 Guitar Fret Noise</div>
+<div prog=121>121 Breath Noise</div>
+<div prog=122>122 Seashore</div>
+<div prog=123>123 Bird Tweet</div>
+<div prog=124>124 Telephone Ring</div>
+<div prog=125>125 Helicopter</div>
+<div prog=126>126 Applause</div>
+<div prog=127>127 Gunshot</div>
+</span>
+</div>
+
+
+
+</body>
+</html>

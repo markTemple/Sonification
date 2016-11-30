@@ -1,0 +1,10 @@
+﻿Started: 11/02/2010 2:49 PM
+
+read_fasta.php - error occurred - An FTP error occurred - cannot put read_fasta.php.  Dreamweaver cannot connect to host "bioinformatics.uws.edu.au". This may be due to one or more of the following reasons:  	- The network cable is unplugged or the network is down. Please verify that the network cable is connected and that the network is up. 	- The FTP server is down. Please verify that you can connect to the FTP server using another FTP program. 	- The FTP host name is incorrect. Please verify that the host name is correct in the Site definition dialog box. 	- The server uses SFTP and the 'Use Secure FTP' checkbox in the Site definition dialog box isn't checked. 	- The server uses FTP and the 'Use Secure FTP' checkbox in the Site definition dialog box is checked. 	- Accessing the server requires firewall settings that aren't properly set. Please verify that the firewall settings in the Site category of the Preferences dialog box are properly set, and that the Use Firewall option in the Site definition dialog box is selected.
+
+File activity incomplete. 1 file(s) or folder(s) were not completed.
+
+Files with errors: 1
+read_fasta.php
+
+Finished: 11/02/2010 2:49 PM

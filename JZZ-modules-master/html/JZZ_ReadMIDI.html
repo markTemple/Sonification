@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<title>Read MIDI File</title>
+<meta name="keywords" content="MIDI file, JavaScript" />
+<meta name="description" content="Javascript: how to read MIDI file from URL, local file, or base64 string" />
+<meta http-equiv="X-UA-Compatible" content="requiresActiveX=true"/>
+<script src="../javascript/script/JZZ.js"></script>
+<script src="../javascript/script/JZZ.synth.OSC.js"></script>
+<script src="../javascript/script/JZZ.input.Kbd.js"></script>
+<script src="../javascript/script/JZZ.Midi.js"></script>
+<script src="../javascript/script/JZZ.MidiFile.js"></script>
+<link rel="stylesheet" type="text/css" href="../style.css" />
+<style type="text/css"></style>
+</head>
+
+<body>
+
+<h1>Read MIDI File</h1>
+
+<object id="Jazz1" classid="CLSID:1ACE1618-1C7D-4561-AEE1-34842AA85E90" class="hidden">
+  <object id="Jazz2" type="audio/x-jazz" class="hidden">
+<p style="visibility:visible;">This page requires <a href=http://jazz-soft.net>Jazz-Plugin</a> ...</p>
+  </object>
+</object>
+
+<span id=play>play</span> 
+
+<p><input type=file id=file size=80 onchange='fromFile();'></p>
+
+<h2>from URL:</h2>
+<form onsubmit='fromUrl(); return false;'>
+<p><input type=text id=url value='http://jazz-soft.net/demo/midi/furelise.mid' size=80><input type=submit value=Submit...></p>
+</form>
+
+
+
+
+<h2>from string: <button onclick='fromString();'>Read...</button></h2>
+
+<p>
+<div id=fname>&nbsp;</div>
+</p><p>
+<div id=midi>Files accepted: SMF (*.mid, *.kar), RMID (*.rmi)</div>
+</p>
+
+
+
+<script><!--
+var Jazz = document.getElementById("Jazz1"); if(!Jazz || !Jazz.isJazz) Jazz = document.getElementById("Jazz2");
+var pl;
+var btn;
+function fromFile(){
+ plzWait(); fName(document.getElementById('file').value);
+ if(window.FileReader){
+  var reader=new FileReader();
+  var f=document.getElementById('file').files[0];
+  reader.onload=function(e){ readMidiFile(e.target.result);};
+  reader.readAsBinaryString(f);
+ }
+ else err('File API is not supported in this browser!');
+}
+function fromUrl(){
+ var url=document.getElementById('url').value;
+ plzWait(); fName(url);
+ try{
+  var req=new XMLHttpRequest();
+  req.open("GET",'proxy.php?url='+url,true);
+  if(req.overrideMimeType){
+   req.overrideMimeType("text/plain; charset=x-user-defined");
+  }
+  req.onreadystatechange=function(ev){
+   if(req.readyState===4){
+    if(req.status===200){
+     var s='';
+     if(typeof req.responseBody=='unknown'){ // MSIE
+      var a=new VBArray(req.responseBody).toArray();
+      for(var i=0;i<a.length;i++) s+=String.fromCharCode(a[i]);
+     }
+     else {
+      var r=req.responseText;
+      for(var i=0;i<r.length;i++) s+=String.fromCharCode(r.charCodeAt(i)&0xff);
+     }
+     readMidiFile(s);
+    }
+    else err(req.status+": "+req.statusText);
+   }
+  };
+  req.send(null);
+ }
+ catch(e){ err(e);}
+}
+function fromString(){
+ plzWait(); fName('Base64 string');
+ readMidiFile(JZZ_.MidiFile.fromBase64(b64));
+}
+function readMidiFile(s){
+ try{
+  var mf=new JZZ_.MidiFile(s);
+  displayMidiFile(mf);
+  if(btn){
+   pl=mf.player();
+   pl.onEvent=onPlayer;
+   btn.disabled=false;
+  }
+ }
+ catch(e){ err(e);}
+}
+function displayMidiFile(mf){
+ document.getElementById('midi').innerHTML='';
+ var chunk;
+ var div;
+ chunk=document.createElement('div');
+ chunk.innerHTML='<div class=hdr>MThd</div>';
+ div=document.createElement('div');
+ div.innerHTML='type: '+mf.type+(mf.ppqn?(', ppqn: '+mf.ppqn):(' smpte: '+mf.fps+'x'+mf.ppf));
+ chunk.appendChild(div);
+ document.getElementById('midi').appendChild(chunk);
+ for(var i=0;i<mf.length;i++){
+  chunk=document.createElement('div');
+  chunk.innerHTML='<div class=hdr>'+mf[i].type+'</div>';
+  if(mf[i].data){
+   div=document.createElement('div');
+   arr=[]; s=mf[i].data;
+   for(var j=0;j<s.length;j++){
+    var c=s.charCodeAt(j)<32?'-':s.charAt(j);
+    if(c=='&') c='&amp;'; if(c=='<') c='&lt;'; if(c=='>') c='&gt;';
+    var n=(s.charCodeAt(j)<16?'0':'')+s.charCodeAt(j).toString(16);
+    if(j && !(j%32)) arr.push('<br>'); else if(j && !(j%8)) arr.push('&nbsp;');
+    arr.push('<span title="'+c+'">'+n+'</span>');
+   }
+   div.innerHTML=arr.join(' ');
+   chunk.appendChild(div);
+  }
+  if(mf[i] instanceof JZZ_.MidiFile.MTrk){
+   for(var j=0;j<mf[i].length;j++){
+    var evt=mf[i][j];
+    var s=evt.toString().replace(/&/g,'&amp;').replace(/>/g,'&gt;').replace(/</g,'&lt;');
+    div=document.createElement('div');
+    div.innerHTML="<span class=clk>"+evt.time+"</span> <span>"+s+"</span>";
+    chunk.appendChild(div);
+   }
+  }
+  document.getElementById('midi').appendChild(chunk);
+ }
+}
+function err(e){ document.getElementById('midi').innerHTML='<span class=err>'+e+'</span>';}
+function plzWait(){
+ document.getElementById('midi').innerHTML='<span class=wait>One moment please...</span>';
+ if(pl) pl.stop();
+ if(btn){ btn.disabled=true; btn.innerHTML='play';}
+}
+function fName(s){ document.getElementById('fname').innerHTML='<tt>'+s+'</tt>';}
+
+var b64='TVRoZAAAAAYAAQAEAeBNVHJrAAAAIAD/UQMHoSAA/wEQSHVtYW4gSC1SYXMgY0ROQacI/y8ATVRyawAABtAA/wEPUmVhZGluZyBmcmFtZSAxALAGfwDgfwAAwACBIJA8f4NgRn8BgDxQg1+QMH8BgEZQg1+QS38BgDBQg1+QOn8BgEtQg1+QN38BgDpQg1+QTX8BgDdQg1+QTX8BgE1Qg1+QTX8BgE1Qg1+QM38BgE1Qg1+QJH8BgDNQg1+QM38BgCRQg1+QM38BgDNQg1+QTX8BgDNQg1+QM38BgE1Qg1+QOn8BgDNQg1+QQn8BgDpQg1+QJH8BgEJQg1+QN38BgCRQg1+QRn8BgDdQg1+QNn8BgEZQg1+QLn8BgDZQg1+QN38BgC5Qg1+QNn8BgDdQg1+QLn8BgDZQg1+QKX8BgC5Qg1+QNX8BgClQg1+QP38BgDVQg1+QTX8BgD9Qg1+QKn8BgE1Qg1+QMH8BgCpQg1+QS38BgDBQg1+QKn8BgEtQg1+QQX8BgCpQg1+QRn8BgEFQg1+QNn8BgEZQg1+QMH8BgDZQg1+QKn8BgDBQg1+QQn8BgCpQg1+QS38BgEJQg1+QJ38BgEtQg1+QOn8BgCdQg1+QLn8BgDpQg1+QTX8BgC5Qg1+QTX8BgE1Qg1+QNn8BgE1Qg1+QKn8BgDZQg1+QM38BgCpQg1+QMH8BgDNQg1+QRn8BgDBQg1+QK38BgEZQg1+QN38BgCtQg1+QN38BgDdQg1+QKn8BgDdQg1+QNn8BgCpQg1+QN38BgDZQg1+QKn8BgDdQg1+QRn8BgCpQg1+QJH8BgEZQg1+QM38BgCRQg1+QLn8BgDNQg1+QMH8BgC5Qg1+QMH8BgDBQg1+QS38BgDBQg1+QQn8BgEtQg1+QJH8BgEJQg1+QPH8BgCRQg1+QJ38BgDxQg1+QKn8BgCdQg1+QLn8BgCpQg1+QS38BgC5Qg1+QPH8BgEtQg1+QJ38BgDxQg1+QRn8BgCdQg1+QM38BgEZQg1+QMH8BgDNQg1+QM38BgDBQg1+QP38BgDNQg1+QN38BgD9Qg1+QK38BgDdQg1+QTX8BgCtQg1+QP38BgE1Qg1+QJH8BgD9Qg1+QNn8BgCRQg1+QKX8BgDZQg1+QKX8BgClQg1+QRn8BgClQg1+QOn8BgEZQg1+QQn8BgDpQg1+QP38BgEJQg1+QMH8BgD9Qg1+QKn8BgDBQg1+QNn8BgCpQg1+QNX8BgDZQg1+QLn8BgDVQg1+QS38BgC5Qg1+QJ38BgEtQg1+QMH8BgCdQg1+QLn8BgDBQg1+QNn8BgC5Qg1+QOn8BgDZQg1+QJ38BgDpQg1+QTX8BgCdQg1+QOn8BgE1Qg1+QKn8BgDpQg1+QQn8BgCpQg1+QKn8BgEJQg1+QKn8BgCpQg1+QTX8BgCpQg1+QQX8BgE1Qg1+QPH8BgEFQg1+QTX8BgDxQg1+QN38BgE1Qg1+QTX8BgDdQg1+QM38BgE1Qg1+QKX8BgDNQg1+QOn8BgClQg1+QK38BgDpQg1+QKn8BgCtQg1+QN38BgCpQg1+QJH8BgDdQg1+QJH8BgCRQg1+QJ38BgCRQg1+QRn8BgCdQg1+QTX8BgEZQg1+QMH8BgE1Qg1+QQn8BgDBQg1+QJ38BgEJQg1+QLn8BgCdQg1+QJH8BgC5Qg1+QLn8BgCRQg1+QKn8BgC5Qg1+QN38BgCpQg1+QJH8BgDdQg1+QJ38BgCRQg1+QQn8BgCdQg1+QS38BgEJQg1+QM38BgEtQg1+QNn8BgDNQg1+QQX8BgDZQg1+QS38BgEFQg1+QNn8BgEtQg1+QMH8BgDZQg1+QRn8BgDBQg1+QQn8BgEZQg1+QJH8BgEJQg1+QOn8BgCRQg1+QRn8BgDpQg1+QJ38BgEZQg1+QLn8BgCdQg1+QM38BgC5Qg1+QTX8BgDNQg1+QMH8BgE1Qg1+QKn8BgDBQg1+QJH8BgCpQg1+QP38BgCRQg1+QS38BgD9Qg1+QRn8BgEtQg1+QN38BgEZQg1+QTX8BgDdQg1+QJ38BgE1Qg1+QMH8BgCdQg1+QNn8BgDBQg1+QJ38BgDZQg1+QLn8BgCdQg1+QNX8BgC5Qg1+QOn8BgDVQg1+QN38BgDpQg1+QJ38BgDdQg1+QOn8BgCdQg1+QN38BgDpQg1+QKX8BgDdQg1+QQX8BgClQg1+QQX8BgEFQg1+QKn8BgEFQg1+QMH8BgCpQg1+QQn8BgDBQg1+QM38BgEJQg1+QQX8BgDNQg1+QM38BgEFQg1+QK38BgDNQg1+QPH8BgCtQg1+QQn8BgDxQg1+QK38BgEJQg1+QOn8BgCtQg1+QK38BgDpQg1+QTX8BgCtQg1+QN38BgE1Qg1+QQn8BgDdQg1+QQwoBgEJQg2BD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g1+SNn8BgjNQg1+SQwoBgjZQg1+SJAoBgkNQg1+SMwoBgiRQg1+SMwoBgjNQg1+SMwoBgjNQg1+SMwoBgjNQg1+SJwoBgjNQg1+SJwoBgidQg1+SJwoBgidQg1+SKwoBgidQg1+SMwoBgitQg1+SLgoBgjNQg1+SMAoBgi5Qg1+SKwoBgjBQg1+SJAoBgitQg1+SKgoBgiRQg1+SNQoBgipQg1+SQQoBgjVQg1+SJAoBgkFQg1+SKgoBgiRQg1+SQQoBgipQg1+SMAoBgkFQg1+SQQoBgjBQg1+SPwoBgkFQg1+SKwoBgj9Qg1+SMwoBgitQg1+SJwoBgjNQg1+SNgoBgidQg1+SJwoBgjZQg1+SQQoBgidQg1+SNQoBgkFQg1+SSwoBgjVQg1+SJwoBgktQg1+SMwoBgidQg1+SPwoBgjNQg1+SNwoBgj9Qg1+SQQoBgjdQg1+SMAoBgkFQg1+SJAoBgjBQg1+SMwoBgiRQg1+SMwoBgjNQg1+SNQoBgjNQg1+SQwoBgjVQg1+SSAoBgkNQg1+SMwoBgkhQg1+SKgoBgjNQg1+STQoBgipQg1+SQQoBgk1Qg1+STQoBgkFQg1+SMwoBgk1Qg1+SNQoBgjNQg1+SQQoBgjVQg1+SMwoBgkFQg1+SSwoBgjNQg1+SJwoBgktQg1+SJwoBgidQg1+SQQoBgidQg1+SMwoBgkFQg1+SMwoBgjNQg1+STQoBgjNQg1+SLgoBgk1Qg1+SJwoBgi5Qg1+SNQoBgidQg1+SJAoBgjVQg1+SMwoBgiRQg1+SQQoBgjNQg1+STQoBgkFQg1+SNQoBgk1Qg1+SJAoBgjVQg1+SNQoBgiRQg1+SJwoBgjVQg1+SMwoBgidQg1+SMwoBgjNQg1+SNwoBgjNQg1+SQQoBgjdQg1+STQoBgkFQg1+SKwoBgk1Qg1+STQoBgitQg1+SKwoBgk1Qg1+SNQoBgitQg1+SLgoBgjVQg1+SLgoBgi5Qg1+SNQoBgi5Qg1+SLgoBgjVQg1+STQoBgi5Qg1+SPwoBgk1Qg1+SQwoBgj9Qg1+SMwoBgkNQg1+SNQoBgjNQg1+SQQoBgjVQg1+SQQoBgkFQg1+STQoBgkFQg1+SLgoBgk1Qg1+SMwoBgi5Qg1+SJAoBgjNQg1+SKgoBgiRQg1+SLgoBgipQg1+SRgoBgi5Qg1+SMwoBgkZQg1+SMAoBgjNQg1+SMwoBgjBQg1+SNwoBgjNQg1+SMwoBgjdQg1+SQwoBgjNQg1+SJwoBgkNQg1+SJAoBgidQg1+SNQoBgiRQg1+SMwoBgjVQg1+SJAoBgjNQg1+SMwoBgiRQg1+SMwoBgjNQg1+SMAoBgjNQg1+SLgoBgjBQg1+STQoBgi5Qg1+SQwoBgk1Qg1+SQQoBgkNQg1+SMwoBgkFQg1+SKwoBgjNQg1+SRgoBgitQg1+SNQoBgkZQg1+SKwoBgjVQg1+SMwoBgitQg1+SNgoBgjNQg1+SQgoBgjZQg1+SJAoBgkJQg1+SMwoBgiRQg1+SQgoBgjNQg1+SMwoBgkJQg1+SQQoBgjNQg1+SJwoBgkFQg1+SQQoBgidQg1+SOgoBgkFQg1+SNwoBgjpQg1+SJwoBgjdQg1+SNQoBgidQg1+SQQoBgjVQg1+SNwoBgkFQg1+SNQoBgjdQg1+SJwoBgjVQg1+SKgoBgidQg1+SNwoBgipQg1+SMwoBgjdQg1+SLgoBgjNQg1+SKgoBgi5Qg1+SQQoBgipQg1+SJAoBgkFQg1+SMwoBgiRQg1+SQgoBgjNQg1+SMwoBgkJQg1+SMwoBgjNQg1+SKwoBgjNQg1+SNwoBgitQg1+SNwoBgjdQg1+SNQoBgjdQg1+STQoBgjVQg1+SMwoBgk1Qg1+SJAoBgjNQg1+SQwoBgiRQg1+SKgoBgkNQg1+SQQoBgipQg1+SJAoBgkFQg1+SJAoBgiRQg1+SLgoBgiRQg1+SJAoBgi5Qg1+SJAoBgiRQg1+SMAoBgiRQg1+SJAoBgjBQg1+SMAoBgiRQg1+SQQoBgjBQg1+SQgoBgkFQg1+SQwoBgkJQg1+SQwoBgkNQg1+SMAoBgkNQg1+SSAoBgjBQg1+SQQoBgkhQg1+SJwoBgkFQg1+SNwoBgidQg1+SNQoBgjdQg1+SMAoBgjVQg1+SNwoBgjBQg1+SLgoBgjdQg1+STQoBgi5Qg1+SKwoBgk1Qg1+SJAoBgitQg1+SNwoBgiRQg1+SNwoBgjdQg2A3UINh/y8A';
+
+function onPlayer(e){
+ if(e.midi instanceof JZZ_.Midi){
+  Jazz.MidiOutRaw(e.midi.array());
+ }
+ if(e.control=='play'){
+  btn.innerHTML='stop';
+ }
+ else if(e.control=='stop'){
+  for(var i=0;i<16;i++) Jazz.MidiOut(0xb0+i,123,0);
+  btn.innerHTML='play';
+ }
+}
+function onButton(){
+ if(!pl) return;
+ if(pl.playing) pl.stop();
+ else pl.play();
+}
+try{
+ Jazz.MidiOutOpen(0);
+ var ver=Jazz.version.split('.');
+ if((ver[0]>1 || (ver[0]==1 && ver[1]>=2)) && Jazz.Support('MidiOutRaw')){
+  document.getElementById('play').innerHTML='<button id=playbtn onclick="onButton();" disabled>play</button>';
+  btn=document.getElementById('playbtn');
+ }
+}
+catch(e){alert(e+":)))");}
+--></script>
+
+<script>
+function onLogo() {
+ if (JZZ().info().engine == 'none') {
+  var allcookies=document.cookie;
+  var cookies=allcookies.split(';');
+  var cookie=null;
+  var show = 1;
+  if (typeof navigator === 'undefined' || (navigator.userAgent.indexOf('Windows')==-1 && navigator.userAgent.indexOf('Linux')==-1 && navigator.userAgent.indexOf('Macintosh')==-1)) {
+   show = 0;
+  }
+  else {
+   for(var i=0;i<cookies.length;i++){
+    cookie=cookies[i];
+    if(cookie.charAt(0)==" ") cookie=cookie.substring(1);
+    if(cookie.substring(0,11)=="jazz_alert=") show=0;
+   }
+  }
+  if(show){
+   var logo=document.getElementById('JazzLogo');
+   var msg=document.createElement('span');
+   msg.className='msg';
+   msg.innerHTML='This piano could play better<br>if you enable <a href=/download/Jazz-Plugin/index.html>Jazz-Plugin</a> ...';
+   logo.appendChild(msg);
+   setTimeout(function(){logo.removeChild(msg);}, 6000);
+   document.cookie="jazz_alert=1;path=/";
+  }
+ }
+ onLogo=function(){};
+}
+JZZ.synth.OSC.register();
+var logo=JZZ.input.Kbd({chan:15,keys:[['60_',60],['61_',61],['62_',62],['63_',63],['64_',64],['65_',65],['66_',66],['67_',67],['68_',68],['69_',69],['70_',70],['71_',71]],onCreate:function(){
+ this.getWhiteKeys().setStyle({backgroundColor:'#ffe'},{backgroundColor:'#aaa'}); this.getBlackKeys().setStyle({backgroundColor:'#111'},{backgroundColor:'#aaa'});
+}}).connect(JZZ().openMidiOut(/^((?!Midi Through).)*$/i)).connect(function(msg){onLogo();});
+</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-68422324-1', 'auto'); ga('send', 'pageview');
+</script>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+download mysql admin
+charm_Lfunction.php
+set mysql commands in above file
+set up pear?
+browse_latice have to set path to svg
+link to graphvis.php
+
+charm _svg_function.php
+there is no html files print_lattice 
+
+from browse latice buttom change here
+
+lattice is stored in mysqi, reformat this for method of initial display

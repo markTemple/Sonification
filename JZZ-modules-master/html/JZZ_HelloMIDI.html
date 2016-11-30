@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hello MIDI!</title>
+<meta http-equiv="X-UA-Compatible" content="requiresActiveX=true"/>
+<script src="../javascript/JZZ.midi.js"></script>
+<script src="../javascript/JZZ.MidiFile.js"></script>
+<script src="../javascript/script/JZZ.js"></script>
+<script src="../javascript/script/JZZ.synth.OSC.js"></script>
+<script src="../javascript/script/JZZ.input.Kbd.js"></script>
+<script src="../javascript/script/JZZ.Midi.js"></script>
+<script src="../javascript/script/JZZ.MidiFile.js"></script>
+<link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+
+<body>
+<div class=path>
+<a href=..>Home</a> &raquo;
+<a href=.>Examples</a> &raquo;
+Write MIDI File
+</div>
+
+<h1>Write MIDI File</h1>
+
+<object id="Jazz1" classid="CLSID:1ACE1618-1C7D-4561-AEE1-34842AA85E90" class="hidden">
+  <object id="Jazz2" type="audio/x-jazz" class="hidden">
+<p style="visibility:visible;">This page requires <a href=http://jazz-soft.net>Jazz-Plugin</a> ...</p>
+  </object>
+</object>
+
+<div id=out></div>
+
+<script><!--
+// Create a MIDI file. Type 1; 100 clocks per quarter note.
+// Normally, it would rather be 96, but 100 makes it easier to count.
+mf = new JZZ_.MidiFile(1,100);
+
+// Add MIDI file tracks:
+var tr0 = new JZZ_.MidiFile.MTrk; mf.push(tr0); // First track in Type 1 MIDI file is normally used for tempo changes
+var tr1 = new JZZ_.MidiFile.MTrk; mf.push(tr1); // This one will be for the karaoke lyrics
+var tr2 = new JZZ_.MidiFile.MTrk; mf.push(tr2); // This one will be for the music
+
+tr0.addName(0,'Little Lamb'); // The name of the first track serves as the file title
+tr0.addTempo(0,90); // Normally set at clock 0, but can be also changed later
+
+tr1.addName(0,'Words'); // The names of other tracks don't have any particular meaning
+tr1.addText(0,'@Tmark Had a Fit'); // Karaoke player will recognize this track by the "@T" tag
+tr1.addText(100,'\\Ma'); // New verse starts with a backslash "\"
+tr1.addText(150,'ry ');
+tr1.addText(200,'had ');
+tr1.addText(250,'a ');
+tr1.addText(300,'lit');
+tr1.addText(350,'tle ');
+tr1.addText(400,'lamb,');
+tr1.addText(500,'/Lit'); // New line starts with a slash "/"
+tr1.addText(550,'tle ');
+tr1.addText(600,'lamb,');
+tr1.addText(700,'/Lit');
+tr1.addText(750,'tle ');
+tr1.addText(800,'lamb,');
+tr1.addText(900,'/Ma');
+tr1.addText(950,'ry ');
+tr1.addText(1000,'had ');
+tr1.addText(1050,'a ');
+tr1.addText(1100,'lit');
+tr1.addText(1150,'tle ');
+tr1.addText(1200,'lamb,');
+tr1.addText(1300,'/Blah-');
+tr1.addText(1350,'blah-');
+tr1.addText(1400,'blah-');
+tr1.addText(1450,'blah-');
+tr1.addText(1500,'blah!');
+
+tr2.addName(0,'Music');
+tr2.addMidi(0,0xc0,0x0b); // clock: 0, MIDI signal: 0xc0 0x0b (change channel 0 program to vibraphone)
+tr2.addNote(100,0,'E5',127,50); // clock: 100, MIDI channel: 0, note: E5, velocity: 127, duration: 50 clocks
+tr2.addNote(150,0,'D5',127,50); // etc...
+tr2.addNote(200,0,'C5',127,50);
+tr2.addNote(250,0,'D5',127,50);
+tr2.addNote(300,0,'E5',127,50);
+tr2.addNote(350,0,64,127,50);   // can also use numerical values for the notes
+tr2.addNote(400,0,0x40,127,90);
+tr2.addNote(500,0,'D5',127,50);
+tr2.addNote(550,0,'D5',127,50);
+tr2.addNote(600,0,'D5',127,90);
+tr2.addNote(700,0,'E5',127,50);
+tr2.addNote(750,0,'G5',127,50);
+tr2.addNote(800,0,'G5',127,90);
+
+tr2.addNote(900,0,'E5',127,50);
+tr2.addNote(950,0,'D5',127,50);
+tr2.addNote(1000,0,'C5',127,50);
+tr2.addNote(1050,0,'D5',127,50);
+tr2.addNote(1100,0,'E5',127,50);
+tr2.addNote(1150,0,'E5',127,50);
+tr2.addNote(1200,0,'E5',127,90);
+tr2.addNote(1300,0,'D5',127,50);
+tr2.addNote(1350,0,'D5',127,50);
+tr2.addNote(1400,0,'E5',127,50);
+tr2.addNote(1450,0,'D5',127,50);
+tr2.addNote(1500,0,'C5',127,190);
+tr2.addNote(1600,0,'E5',100,90);
+tr2.addNote(1600,0,'G5',100,90);
+tr2.addNote(1600,0,'C6',127,90);
+tr2.setTime(1700);
+
+var str = mf.dump(); // MIDI file dumped as a string
+var b64 = JZZ_.MidiFile.toBase64(str); // convert to base-64 string
+var uri = 'data:audio/midi;base64,' + b64; // data URI
+
+// Finally, write it to the document as a link and as an embedded object:
+document.getElementById('out').innerHTML='<p>New file: <a href=' + uri + '>DOWNLOAD</a> <embed src=' + uri + ' autostart=false></p>';
+--></script>
+
+<h2>How it works</h2>
+<p>
+Save the above link as <em>*.kar</em> file and open it in MIDI/karaoke player.
+</p><p>
+If the approppriate plugin (most likely, <em>QuickTime</em>) is enabled in your browser,
+you will also see an embedded object next to the link.
+</p><p>
+The code below creates MIDI file from scratch and writes it into HTML document.
+</p>
+
+
+<div class=footer>
+(C) 2011-16 Jazz-Soft
+</div>
+<script>
+function onLogo() {
+ if (JZZ().info().engine == 'none') {
+  var allcookies=document.cookie;
+  var cookies=allcookies.split(';');
+  var cookie=null;
+  var show = 1;
+  if (typeof navigator === 'undefined' || (navigator.userAgent.indexOf('Windows')==-1 && navigator.userAgent.indexOf('Linux')==-1 && navigator.userAgent.indexOf('Macintosh')==-1)) {
+   show = 0;
+  }
+  else {
+   for(var i=0;i<cookies.length;i++){
+    cookie=cookies[i];
+    if(cookie.charAt(0)==" ") cookie=cookie.substring(1);
+    if(cookie.substring(0,11)=="jazz_alert=") show=0;
+   }
+  }
+  if(show){
+   var logo=document.getElementById('JazzLogo');
+   var msg=document.createElement('span');
+   msg.className='msg';
+   msg.innerHTML='This piano could play better<br>if you enable <a href=/download/Jazz-Plugin/index.html>Jazz-Plugin</a> ...';
+   logo.appendChild(msg);
+   setTimeout(function(){logo.removeChild(msg);}, 6000);
+   document.cookie="jazz_alert=1;path=/";
+  }
+ }
+ onLogo=function(){};
+}
+JZZ.synth.OSC.register();
+var logo=JZZ.input.Kbd({chan:15,keys:[['60_',60],['61_',61],['62_',62],['63_',63],['64_',64],['65_',65],['66_',66],['67_',67],['68_',68],['69_',69],['70_',70],['71_',71]],onCreate:function(){
+ this.getWhiteKeys().setStyle({backgroundColor:'#ffe'},{backgroundColor:'#aaa'}); this.getBlackKeys().setStyle({backgroundColor:'#111'},{backgroundColor:'#aaa'});
+}}).connect(JZZ().openMidiOut(/^((?!Midi Through).)*$/i)).connect(function(msg){onLogo();});
+</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-68422324-1', 'auto'); ga('send', 'pageview');
+</script>
+
+
+</body>
+</html>
